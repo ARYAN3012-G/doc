@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mongoose Todo App</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; max-width: 600px; margin: 2rem auto; padding: 1rem; background: #f4f4f9; }
+        .todo-item { background: white; padding: 10px; margin-bottom: 5px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .completed { text-decoration: line-through; color: #888; }
+        form { margin-bottom: 20px; display: flex; gap: 10px; }
+        input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 20px; cursor: pointer; border: none; border-radius: 5px; background: #007bff; color: white; }
+    </style>
+</head>
+<body>
+    <h1>Mongoose Todo App</h1>
+    <form id="todo-form">
+        <input type="text" id="todo-input" placeholder="Enter a todo..." required>
+        <button type="submit">Add</button>
+    </form>
+    <div id="todo-list"></div>
+
+    <script>
+        const API_URL = 'http://localhost:5001/api/todos';
+
+        async function fetchTodos() {
+            const res = await fetch(API_URL);
+            const todos = await res.json();
+            const list = document.getElementById('todo-list');
+            list.innerHTML = '';
+            todos.forEach(todo => {
+                const div = document.createElement('div');
+                div.className = 'todo-item';
+                div.innerHTML = `
+                    <span class="${todo.completed ? 'completed' : ''}">${todo.title}</span>
+                    <button onclick="deleteTodo('${todo._id}')">Delete</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        document.getElementById('todo-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('todo-input').value;
+            await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title })
+            });
+            document.getElementById('todo-input').value = '';
+            fetchTodos();
+        });
+
+        async function deleteTodo(id) {
+            await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            fetchTodos();
+        }
+
+        fetchTodos();
+    </script>
+</body>
+</html>
