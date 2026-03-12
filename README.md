@@ -1,35 +1,44 @@
-# Full Stack Syntax Guide & Projects Overview
+# Full Stack Syntax Guide & Projects
 
-This repository contains a comprehensive set of syntax guides and practical project examples for full-stack development.
+A comprehensive, in-depth reference for full-stack development with modern syntax and practical projects.
 
-## 📁 Directory Structure
+## 📁 Syntax Guides (`fullstack-syntax-guide/`)
 
-### 1. [fullstack-syntax-guide/](./fullstack-syntax-guide/)
-Modern syntax guides for core technologies:
-- [HTML](./fullstack-syntax-guide/html/syntax.md): Semantic HTML5, structure, and forms.
-- [CSS](./fullstack-syntax-guide/css/syntax.md): Variables, Flexbox, Grid, and animations.
-- [JavaScript](./fullstack-syntax-guide/javascript/syntax.md): ES6+, ESM, Async/Await.
-- [Node/Express](./fullstack-syntax-guide/node/syntax.md): Server setup, routing, and middleware.
-- [Mongoose](./fullstack-syntax-guide/mongoose/syntax.md): Connection steps and CRUD operations.
-- [MySQL](./fullstack-syntax-guide/mysql/syntax.md): Connection steps and SQL integration.
+| Folder | Topics Covered |
+|:---|:---|
+| [HTML](./fullstack-syntax-guide/html/syntax.md) | Structure, text, links, lists, tables, forms (all input types), semantic elements, media, global attributes, entities |
+| [CSS](./fullstack-syntax-guide/css/syntax.md) | All selectors, box model, display, positioning, CSS variables, Flexbox, Grid, typography, colors, shadows, transitions, animations, transforms, responsive design, modern reset |
+| [JavaScript](./fullstack-syntax-guide/javascript/syntax.md) | Variables, types, strings, numbers, arrays, objects, functions, destructuring, spread/rest, promises, async/await, ESM, classes, error handling, DOM, Fetch API, localStorage, Map/Set |
+| [Node.js](./fullstack-syntax-guide/node/syntax.md) | ESM setup, console, process, fs (promises), path, HTTP server, events, OS, URL, child process, timers, dotenv |
+| [Express](./fullstack-syntax-guide/express/syntax.md) | Server setup, all HTTP methods, req/res objects, Router, all middleware types, error handling, file uploads (Multer), CORS, project structure |
+| [Mongoose](./fullstack-syntax-guide/mongoose/syntax.md) | Connection steps (local + Atlas), schema types + validators, model creation, all CRUD + query operators, population/joins, instance/static methods, middleware hooks, indexing |
+| [MySQL](./fullstack-syntax-guide/mysql/syntax.md) | Connection (simple + pool), DDL/DML, all data types, CRUD with Node.js, all JOINs, subqueries, transactions, indexes, constraints, views, stored procedures, functions |
 
-### 2. [fullstack-projects/](./fullstack-projects/)
-Complete functional projects:
-- [Mongoose Todo App](./fullstack-projects/mongoose-project/): Express + MongoDB CRUD application.
-- [MySQL User Management](./fullstack-projects/mysql-project/): Express + MySQL CRUD application.
+## 🚀 Projects (`fullstack-projects/`)
 
-## 🚀 How to Run the Projects
+| Project | Stack | Key Concepts |
+|:---|:---|:---|
+| [Todo App](./fullstack-projects/mongoose-project/) | Express + Mongoose | Schema validation, CRUD, filters, priority, toggle, stats |
+| [User Management](./fullstack-projects/mysql-project/) | Express + MySQL | CRUD, search, role filter, toggle active, stats |
+| [E-Commerce](./fullstack-projects/mysql-ecommerce-project/) | Express + MySQL | Multiple tables, Foreign Keys, JOINs, Transactions, Aggregation, Dashboard |
+
+## ▶️ How to Run
+
+```bash
+# Navigate to any project folder
+cd fullstack-projects/mongoose-project
+
+# Install dependencies
+npm install
+
+# Start the server
+node server.js
+
+# Open index.html in your browser
+```
 
 ### Prerequisites
-- Node.js installed.
-- MongoDB running locally (for Mongoose project).
-- MySQL running locally (for MySQL project).
-
-### Steps
-1. Navigate to the project folder (e.g., `mongoose-project`).
-2. Run `npm install` to install dependencies.
-3. Start the server using `node server.js`.
-4. Open the `index.html` file in your browser to interact with the app.
-
----
-*Created for quick reference and exam preparation.*
+- **Node.js** installed
+- **MongoDB** running locally (for Mongoose project)
+- **MySQL** running locally (for MySQL projects) with password: `aryan3012`
+- Create databases before running: `CREATE DATABASE user_management;` and `CREATE DATABASE ecommerce_db;`

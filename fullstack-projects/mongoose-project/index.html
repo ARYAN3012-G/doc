@@ -5,59 +5,154 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mongoose Todo App</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; max-width: 600px; margin: 2rem auto; padding: 1rem; background: #f4f4f9; }
-        .todo-item { background: white; padding: 10px; margin-bottom: 5px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .completed { text-decoration: line-through; color: #888; }
-        form { margin-bottom: 20px; display: flex; gap: 10px; }
-        input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
-        button { padding: 10px 20px; cursor: pointer; border: none; border-radius: 5px; background: #007bff; color: white; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; padding: 2rem; }
+        .container { max-width: 700px; margin: 0 auto; }
+        h1 { text-align: center; font-size: 2rem; margin-bottom: 0.5rem; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+        .stat-card { background: #1e293b; padding: 12px; border-radius: 10px; text-align: center; }
+        .stat-card .number { font-size: 1.5rem; font-weight: 700; color: #818cf8; }
+        .stat-card .label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; }
+        form { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; margin-bottom: 1rem; }
+        input, select { padding: 12px; border: 1px solid #334155; border-radius: 8px; background: #1e293b; color: #e2e8f0; font-size: 0.9rem; outline: none; }
+        input:focus { border-color: #667eea; }
+        button { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: all 0.2s; }
+        .btn-add { background: #667eea; color: white; }
+        .btn-add:hover { background: #5a6fd6; }
+        .filters { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+        .filters button { padding: 8px 16px; background: #1e293b; color: #94a3b8; border: 1px solid #334155; font-size: 0.8rem; }
+        .filters button.active { background: #667eea; color: white; border-color: #667eea; }
+        .todo-list { display: flex; flex-direction: column; gap: 8px; }
+        .todo-item { background: #1e293b; padding: 16px; border-radius: 10px; display: flex; align-items: center; gap: 12px; transition: all 0.2s; border-left: 4px solid #667eea; }
+        .todo-item.completed { opacity: 0.5; border-left-color: #22c55e; }
+        .todo-item.priority-high { border-left-color: #ef4444; }
+        .todo-item.priority-low { border-left-color: #94a3b8; }
+        .todo-item .checkbox { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .todo-item.completed .checkbox { background: #22c55e; border-color: #22c55e; }
+        .todo-item.completed .checkbox::after { content: '✓'; color: white; font-size: 12px; }
+        .todo-item .info { flex: 1; }
+        .todo-item .title { font-weight: 500; }
+        .todo-item.completed .title { text-decoration: line-through; }
+        .todo-item .meta { font-size: 0.75rem; color: #64748b; margin-top: 4px; }
+        .todo-item .actions { display: flex; gap: 6px; }
+        .todo-item .actions button { padding: 6px 12px; font-size: 0.75rem; }
+        .btn-edit { background: #334155; color: #e2e8f0; }
+        .btn-delete { background: #dc2626; color: white; }
+        .btn-delete:hover { background: #b91c1c; }
+        .btn-clear { background: #1e293b; color: #ef4444; border: 1px solid #ef4444; margin-top: 1rem; width: 100%; }
+        .empty { text-align: center; color: #64748b; padding: 3rem; }
     </style>
 </head>
 <body>
-    <h1>Mongoose Todo App</h1>
-    <form id="todo-form">
-        <input type="text" id="todo-input" placeholder="Enter a todo..." required>
-        <button type="submit">Add</button>
-    </form>
-    <div id="todo-list"></div>
+    <div class="container">
+        <h1>📝 Mongoose Todo App</h1>
+        <p style="text-align:center; color:#64748b; margin-bottom:1.5rem;">Full CRUD with MongoDB & Express</p>
+
+        <div class="stats" id="stats"></div>
+
+        <form id="todo-form">
+            <input type="text" id="todo-title" placeholder="What needs to be done?" required>
+            <select id="todo-priority">
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="low">Low</option>
+            </select>
+            <button type="submit" class="btn-add">Add</button>
+        </form>
+
+        <div class="filters">
+            <button class="active" onclick="setFilter('all')">All</button>
+            <button onclick="setFilter('pending')">Pending</button>
+            <button onclick="setFilter('completed')">Completed</button>
+            <button onclick="setFilter('high')">🔴 High</button>
+        </div>
+
+        <div class="todo-list" id="todo-list"></div>
+        <button class="btn-clear" onclick="clearCompleted()">Clear Completed</button>
+    </div>
 
     <script>
-        const API_URL = 'http://localhost:5001/api/todos';
+        const API = 'http://localhost:5001/api';
+        let currentFilter = 'all';
+
+        async function fetchStats() {
+            const res = await fetch(`${API}/stats`);
+            const { data } = await res.json();
+            document.getElementById('stats').innerHTML = `
+                <div class="stat-card"><div class="number">${data.total}</div><div class="label">Total</div></div>
+                <div class="stat-card"><div class="number">${data.pending}</div><div class="label">Pending</div></div>
+                <div class="stat-card"><div class="number">${data.completed}</div><div class="label">Done</div></div>
+                <div class="stat-card"><div class="number">${data.highPriority}</div><div class="label">🔴 High</div></div>
+            `;
+        }
 
         async function fetchTodos() {
-            const res = await fetch(API_URL);
-            const todos = await res.json();
+            let url = `${API}/todos`;
+            if (currentFilter === 'pending') url += '?completed=false';
+            else if (currentFilter === 'completed') url += '?completed=true';
+            else if (currentFilter === 'high') url += '?priority=high';
+
+            const res = await fetch(url);
+            const { data } = await res.json();
             const list = document.getElementById('todo-list');
-            list.innerHTML = '';
-            todos.forEach(todo => {
-                const div = document.createElement('div');
-                div.className = 'todo-item';
-                div.innerHTML = `
-                    <span class="${todo.completed ? 'completed' : ''}">${todo.title}</span>
-                    <button onclick="deleteTodo('${todo._id}')">Delete</button>
-                `;
-                list.appendChild(div);
-            });
+
+            if (data.length === 0) {
+                list.innerHTML = '<div class="empty">No todos found. Add one above!</div>';
+                return;
+            }
+
+            list.innerHTML = data.map(todo => `
+                <div class="todo-item ${todo.completed ? 'completed' : ''} priority-${todo.priority}">
+                    <div class="checkbox" onclick="toggleTodo('${todo._id}')"></div>
+                    <div class="info">
+                        <div class="title">${todo.title}</div>
+                        <div class="meta">${todo.priority.toUpperCase()} · ${new Date(todo.createdAt).toLocaleDateString()}</div>
+                    </div>
+                    <div class="actions">
+                        <button class="btn-delete" onclick="deleteTodo('${todo._id}')">Delete</button>
+                    </div>
+                </div>
+            `).join('');
         }
 
         document.getElementById('todo-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const title = document.getElementById('todo-input').value;
-            await fetch(API_URL, {
+            const title = document.getElementById('todo-title').value;
+            const priority = document.getElementById('todo-priority').value;
+            await fetch(`${API}/todos`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title })
+                body: JSON.stringify({ title, priority })
             });
-            document.getElementById('todo-input').value = '';
-            fetchTodos();
+            document.getElementById('todo-title').value = '';
+            refresh();
         });
 
+        async function toggleTodo(id) {
+            await fetch(`${API}/todos/${id}/toggle`, { method: 'PATCH' });
+            refresh();
+        }
+
         async function deleteTodo(id) {
-            await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            await fetch(`${API}/todos/${id}`, { method: 'DELETE' });
+            refresh();
+        }
+
+        async function clearCompleted() {
+            await fetch(`${API}/todos`, { method: 'DELETE' });
+            refresh();
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filters button').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
             fetchTodos();
         }
 
-        fetchTodos();
+        function refresh() { fetchStats(); fetchTodos(); }
+        refresh();
     </script>
 </body>
 </html>
